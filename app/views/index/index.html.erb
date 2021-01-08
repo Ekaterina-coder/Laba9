@@ -1,0 +1,61 @@
+<h1>Панина Екатерина Алексеевна ИУ6-32Б</h1>
+<p>Написать программу, определяющую все меньшие n (n ≤ 10^6) нату- ральные числа, которые являются палиндромами как в десятичной, так и в двоичной системе. При программировании использовать функцию. Вывести на печать все найденные числа в десятичной и двоичной систе- ме. Например: 33 − 100001.</p>
+<p>Введите n </p>
+<form name="lab9_form" method="get">
+  <label for="Value_1">n:</label>
+  <input type="text" name="n" id="n"> <br>
+  <input name="commit" type="submit" value="Вычислить" onclick="return send_query();" />
+</form>
+<table id="number_tabel">
+    <tr> <th>Десятичная система</th><th>Двоичная система</th></tr>
+</table>
+<p id="error"></p>
+<script>
+  function send_query(){
+    var url = location.protocol + "//" + location.host + "/index/index.json"
+    var frm = document.forms.lab9_form;
+    var param = "?" +"n=" + frm.n.value
+    if (param == "") return false;
+    var JSON_object = {};
+    var http_request = new XMLHttpRequest();
+    http_request.open("GET", url + param, true);
+    http_request.onreadystatechange = function () {
+        var done = 4, ok = 200;
+        if (http_request.readyState == done && http_request.status == ok) {
+            JSON_object = JSON.parse(http_request.responseText);
+            if (JSON_object.value == "Неверный формат данных") {
+                clearTable()
+                const err = document.getElementById("error")
+                err.textContent = JSON_object.value;
+            } else  {
+             result(JSON_object);
+            }
+        }
+    };
+    http_request.send(null);
+        return false;
+    }
+    function clearTable() {
+        var table = document.getElementById("number_tabel");
+        for(var i = table.rows.length - 1; i >= 1; i--) {
+            table.deleteRow(i);
+        }
+    }
+    function result(data){
+        const err = document.getElementById("error")
+        err.textContent = ""
+        clearTable()
+        var table = document.getElementById('number_tabel');
+        var row = {};
+        var cell = {};
+
+        data.value.forEach(function(rowData) {
+            row = table.insertRow(-1); // [-1] for last position in Safari
+            rowData.forEach(function(cellData) {
+              cell = row.insertCell();
+              cell.textContent = cellData;
+            });
+          });
+        document.body.appendChild(table);
+    }
+</script>
